@@ -3,32 +3,19 @@
     <div class="container mt-5 mb-4">
         <h1>Chat Room</h1>
     </div>
-    <div class="container my-5">
-        <div class="row">
-            <div class="col-5">
-              <div v-if="username == null || username == 'false'">
-                  <div class="form-group">
-                      <label for="username_input">Your username:</label>
-                      <input type="text" class="form-control" ref="username" placeholder="Enter your username">
-                  </div>
-                  <button type="submit" class="btn btn-primary" @click="login" @submit="$event.preventDefault()">LogIn</button>
-              </div>
-              <div v-else>
-                <h2>Hello, <strong id="username">{{ username }}</strong></h2>
-                <p><button @click="logout">Exit</button></p>
-              </div>
-            </div>
-        </div>
-    </div>
-    <div class="container" v-if="!(username == null || username == 'false')">
+    <div class="container">
       <ul id="messages"></ul>
         <div class="row">
             <div class="col-7">
-              <div class="form-group">
-                  <label for="message_input">Message:</label>
-                  <input type="text" class="form-control" ref="message_input" placeholder="Enter your message here">
+              <div class="username">
+                <label for="message_input">Username:</label>
+                <input type="text" ref="username_input" v-model="username" placeholder="Enter your username">
               </div>
-              <button @click="sendMessage">Send</button>
+              <div class="message">
+                <label for="message_input">Message:</label>
+                <input type="text" ref="message_input" placeholder="Enter your message">
+                <button @click="sendMessage">Send</button>
+              </div>
             </div>
         </div>
     </div>
@@ -47,41 +34,42 @@ import axios, { AxiosResponse } from 'axios'
         console.log('disconnect was called');
       },
       message(data) {
-        console.log(data)
+        console.log(data);
+        // TODO delete getElementById
+        document.getElementById("messages")!.append('<li class="text-muted"><strong>' + data.user + ':</strong>' + data.msg + '</li><br>')
       }
   }})
 
 export default class Enter extends Vue {
   @Prop() private msg!: string;
 
-  private username: AxiosResponse | null | string = null;
+  private username = null;
   private host = "https://chat.yellco.ru";
 
-  login() {
-    const data = new FormData();
-    data.append('username', (this.$refs.username as HTMLInputElement).value);
+  // login() {
+  //   const data = new FormData();
+  //   data.append('username', (this.$refs.username as HTMLInputElement).value);
 
-    axios
-      .post(this.host + '/chat/login', data)
-      .then(response => {
-          response.data === "ok" ? this.username = "" : null;
-          this.getUsername();
-        })    
-  }
+  //   axios
+  //     .post(this.host + '/chat/login', data)
+  //     .then(response => {
+  //         response.data === "ok" ? this.username = "" : null;
+  //       })    
+  // }
 
-  logout() {
-    axios
-      .get(this.host + '/chat/logout')
-      .then(response => ( response.data === "ok" ? this.username = "" : null))
-    console.log(this.username);
-  }
+  // logout() {
+  //   axios
+  //     .get(this.host + '/chat/logout')
+  //     .then(response => ( response.data === "ok" ? this.username = "" : null))
+  //   console.log(this.username);
+  // }
 
-  getUsername() {
-    axios
-      .get(this.host + '/chat/username')
-      .then(response => (this.username = response.data))
-      .catch(error => console.log(error.response));    
-  }
+  // getUsername() {
+  //   axios
+  //     .get(this.host + '/chat/username')
+  //     .then(response => (this.username = response.data))
+  //     .catch(error => console.log(error.response));    
+  // }
 
   sendMessage() {
     this.$socket.emit('chat-message', {
@@ -92,7 +80,7 @@ export default class Enter extends Vue {
   }
 
   mounted() {
-    this.getUsername();
+    // this.getUsername();
   }
 
 }
