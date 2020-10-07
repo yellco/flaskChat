@@ -19,14 +19,19 @@
 
 #nav {
   padding: 30px;
+  background: #f5faff;
 
   a {
     font-weight: bold;
     color: #2c3e50;
 
     &.router-link-exact-active {
-      color: #42b983;
+      color: #175eff;
     }
   }
+}
+
+body {
+  margin: 0;
 }
 </style>
